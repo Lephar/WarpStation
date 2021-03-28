@@ -1,6 +1,8 @@
 CC = gcc
 CFLAGS = -std=gnu17 -march=native -mtune=native -flto -O2 -Wall -Wextra
 
+.PHONY: all clean
+
 all: zero
 
 zero: main.o game.o network.o database.o
