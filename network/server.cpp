@@ -1,4 +1,3 @@
-#include <iostream>
 #include "server.hpp"
 
 namespace zero::network {
@@ -10,7 +9,7 @@ namespace zero::network {
         setsockopt(socket, IPPROTO_TCP, TCP_NODELAY, &nodelayValue, sizeof(int32_t));
     }
 
-    Server::Server(uint32_t port) : lock(), receiver(), sender() {
+    Server::Server(uint32_t port) : lock(), listener(), receiver(), sender(), clients() {
         active = false;
         pthread_rwlock_init(&lock, nullptr);
 
@@ -46,23 +45,45 @@ namespace zero::network {
         pthread_rwlock_unlock(&lock);
     }
 
-    void *startReceiver(void *context) {
-        auto server = reinterpret_cast<Server *>(context);
+    void Server::listenLoop() {
+        while (isActive()) {
+            sockaddr_in clientAddress{};
+            socklen_t addressLength = sizeof(sockaddr_in);
 
-        while (server->isActive()) {
-            // Process updates here
+            int32_t client = accept(server, reinterpret_cast<sockaddr *>(&clientAddress), &addressLength);
+            optimizeSocket(client);
+
+            clients.emplace_back(client, clientAddress);
         }
+    }
 
+    void Server::receiveLoop() {
+        while (isActive()) {
+
+        }
+    }
+
+    void Server::sendLoop() {
+        while (isActive()) {
+
+        }
+    }
+
+    void *listenerProxy(void *context) {
+        auto server = reinterpret_cast<Server *>(context);
+        server->listenLoop();
         return nullptr;
     }
 
-    void *startSender(void *context) {
+    void *receiverProxy(void *context) {
         auto server = reinterpret_cast<Server *>(context);
+        server->receiveLoop();
+        return nullptr;
+    }
 
-        while (server->isActive()) {
-            // Send updates here
-        }
-
+    void *senderProxy(void *context) {
+        auto server = reinterpret_cast<Server *>(context);
+        server->sendLoop();
         return nullptr;
     }
 
@@ -71,13 +92,15 @@ namespace zero::network {
 
         setActive(true);
 
-        pthread_create(&receiver, nullptr, startReceiver, this);
-        pthread_create(&sender, nullptr, startSender, this);
+        pthread_create(&listener, nullptr, listenerProxy, this);
+        pthread_create(&receiver, nullptr, receiverProxy, this);
+        pthread_create(&sender, nullptr, senderProxy, this);
     }
 
     void Server::stop() {
         setActive(false);
 
+        pthread_join(listener, nullptr);
         pthread_join(receiver, nullptr);
         pthread_join(sender, nullptr);
 

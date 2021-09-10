@@ -8,6 +8,9 @@
 #include <netinet/tcp.h>
 #include <arpa/inet.h>
 
+#include <cstring>
+
+#include <vector>
 #include <unordered_map>
 
 #endif //ZERO_SERVER_NETWORK_BASE_HPP
