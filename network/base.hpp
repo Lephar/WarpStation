@@ -10,6 +10,4 @@
 
 #include <unordered_map>
 
-#define UUID_STRING_SIZE 37
-
 #endif //ZERO_SERVER_NETWORK_BASE_HPP

@@ -9,7 +9,7 @@ namespace zero::network {
         int32_t server;
 
         bool active;
-        pthread_rwlock_t lock; // TODO: Wrap into function
+        pthread_rwlock_t lock;
 
         pthread_t receiver;
         pthread_t sender;
@@ -17,6 +17,8 @@ namespace zero::network {
         explicit Server(uint32_t port);
 
         bool isActive();
+
+        void setActive(bool value);
 
         void start();
 

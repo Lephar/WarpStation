@@ -1,7 +1,8 @@
+#include <iostream>
 #include "server.hpp"
 
 namespace zero::network {
-    void setSocketProperties(int32_t socket) {
+    void optimizeSocket(int32_t socket) {
         int32_t nodelayValue = 1;
         uint8_t tosValue = IPTOS_LOWDELAY;
 
@@ -18,7 +19,7 @@ namespace zero::network {
         int32_t reuseaddrValue = 1;
         setsockopt(server, SOL_SOCKET, SO_REUSEADDR, &reuseaddrValue, sizeof(int32_t));
 
-        setSocketProperties(server);
+        optimizeSocket(server);
 
         sockaddr_in serverAddress = {
                 .sin_family = AF_INET,
@@ -36,14 +37,20 @@ namespace zero::network {
         bool value = active;
         pthread_rwlock_unlock(&lock);
 
-        return value; // TODO: Synchronization
+        return value;
+    }
+
+    void Server::setActive(bool value) {
+        pthread_rwlock_wrlock(&lock);
+        active = value;
+        pthread_rwlock_unlock(&lock);
     }
 
     void *startReceiver(void *context) {
         auto server = reinterpret_cast<Server *>(context);
 
         while (server->isActive()) {
-
+            // Process updates here
         }
 
         return nullptr;
@@ -53,7 +60,7 @@ namespace zero::network {
         auto server = reinterpret_cast<Server *>(context);
 
         while (server->isActive()) {
-
+            // Send updates here
         }
 
         return nullptr;
@@ -62,19 +69,14 @@ namespace zero::network {
     void Server::start() {
         listen(server, SOMAXCONN);
 
-        pthread_rwlock_wrlock(&lock);
-        active = true;
-        pthread_rwlock_unlock(&lock);
-
+        setActive(true);
 
         pthread_create(&receiver, nullptr, startReceiver, this);
         pthread_create(&sender, nullptr, startSender, this);
     }
 
     void Server::stop() {
-        pthread_rwlock_wrlock(&lock);
-        active = false;
-        pthread_rwlock_unlock(&lock);
+        setActive(false);
 
         pthread_join(receiver, nullptr);
         pthread_join(sender, nullptr);
