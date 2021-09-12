@@ -1,0 +1,6 @@
+#ifndef ZERO_SERVER_DATABASE_BASE_HPP
+#define ZERO_SERVER_DATABASE_BASE_HPP
+
+#include <libpq-fe.h>
+
+#endif //ZERO_SERVER_DATABASE_BASE_HPP
