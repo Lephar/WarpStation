@@ -7,10 +7,10 @@ namespace zero::network {
     class Client {
     private:
         int32_t client;
-        char ip[INET_ADDRSTRLEN];
+        in_addr_t ip;
         uint16_t port;
     public:
-        Client(int32_t client, sockaddr_in address);
+        Client(int32_t client, in_addr_t ip, uint16_t port);
     };
 }
 

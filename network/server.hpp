@@ -10,13 +10,14 @@ namespace zero::network {
         int32_t server;
 
         bool active;
-        pthread_rwlock_t lock; // TODO: Use atomics
+        pthread_rwlock_t statusLock; // TODO: Use atomics (maybe?)
 
         pthread_t listener;
         pthread_t receiver;
         pthread_t sender;
 
-        std::vector<Client> clients; //TODO: Change to set
+        std::list<Client> clients; // TODO: Add hashing and change to set
+        pthread_rwlock_t listLock;
     public:
         explicit Server(uint32_t port);
 
@@ -33,6 +34,8 @@ namespace zero::network {
         void start();
 
         void stop();
+
+        ~Server();
     };
 }
 

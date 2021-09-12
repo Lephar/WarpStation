@@ -10,7 +10,6 @@ namespace zero::network {
         std::unordered_map<const char *, Server> servers;
     public:
         Server &createServer(const char *name, uint32_t port);
-        ~Network();
     };
 }
 

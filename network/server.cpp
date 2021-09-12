@@ -9,9 +9,11 @@ namespace zero::network {
         setsockopt(socket, IPPROTO_TCP, TCP_NODELAY, &nodelayValue, sizeof(int32_t));
     }
 
-    Server::Server(uint32_t port) : lock(), listener(), receiver(), sender(), clients() {
+    Server::Server(uint32_t port) : statusLock(), listLock(), listener(), receiver(), sender(), clients() {
         active = false;
-        pthread_rwlock_init(&lock, nullptr);
+
+        pthread_rwlock_init(&statusLock, nullptr);
+        pthread_rwlock_init(&listLock, nullptr);
 
         server = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -32,17 +34,17 @@ namespace zero::network {
     }
 
     bool Server::isActive() {
-        pthread_rwlock_rdlock(&lock);
+        pthread_rwlock_rdlock(&statusLock);
         bool value = active;
-        pthread_rwlock_unlock(&lock);
+        pthread_rwlock_unlock(&statusLock);
 
         return value;
     }
 
     void Server::setActive(bool value) {
-        pthread_rwlock_wrlock(&lock);
+        pthread_rwlock_wrlock(&statusLock);
         active = value;
-        pthread_rwlock_unlock(&lock);
+        pthread_rwlock_unlock(&statusLock);
     }
 
     void Server::listenLoop() {
@@ -53,7 +55,9 @@ namespace zero::network {
             int32_t client = accept(server, reinterpret_cast<sockaddr *>(&clientAddress), &addressLength);
             optimizeSocket(client);
 
-            clients.emplace_back(client, clientAddress);
+            pthread_rwlock_wrlock(&listLock);
+            clients.emplace_back(client, clientAddress.sin_addr.s_addr, clientAddress.sin_port);
+            pthread_rwlock_unlock(&listLock);
         }
     }
 
@@ -98,12 +102,21 @@ namespace zero::network {
     }
 
     void Server::stop() {
+        if (!isActive())
+            return;
+
         setActive(false);
+
+        pthread_cancel(listener);
 
         pthread_join(listener, nullptr);
         pthread_join(receiver, nullptr);
         pthread_join(sender, nullptr);
 
         close(server);
+    }
+
+    Server::~Server() {
+        stop();
     }
 }
