@@ -1,2 +1,2 @@
-# Zero Game Server
-Based on Unix sockets and using PosgreSQL
+# Warp Center
+Server for Warp Engine based on Unix sockets and using PosgreSQL
