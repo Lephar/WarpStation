@@ -1,16 +1,17 @@
-cmake_minimum_required(VERSION 3.20)
-project(ZeroServer)
+cmake_minimum_required(VERSION 3.27)
 
-set(CMAKE_C_STANDARD 17)
+project(WarpStation)
+
+set(CMAKE_C_STANDARD 23)
 set(CMAKE_CXX_STANDARD 23)
 
-add_library(ZeroNetwork network/base.hpp network/network.cpp network/network.hpp network/server.cpp network/server.hpp network/client.cpp network/client.hpp)
-target_precompile_headers(ZeroNetwork PRIVATE network/base.hpp)
-target_link_libraries(ZeroNetwork pthread)
+file(GLOB_RECURSE HEADERS include/*.h)
+file(GLOB_RECURSE SOURCES src/*.c)
 
-add_library(ZeroDatabase database/base.hpp database/database.cpp database/database.hpp)
-target_precompile_headers(ZeroDatabase PRIVATE database/base.hpp)
-target_link_libraries(ZeroDatabase pq)
+set(SOURCE_COMPILE_OPTIONS -Wall -Wextra)
 
-add_executable(ZeroServer main.cpp)
-target_link_libraries(ZeroServer ZeroNetwork ZeroDatabase)
+add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES})
+target_compile_options(${PROJECT_NAME} PUBLIC ${SOURCE_COMPILE_OPTIONS})
+target_include_directories(${PROJECT_NAME} PUBLIC include)
+target_precompile_headers(${PROJECT_NAME} PUBLIC include/pch.h)
+target_link_libraries(${PROJECT_NAME} pthread)
