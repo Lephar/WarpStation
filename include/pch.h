@@ -23,6 +23,8 @@
 #include <sys/wait.h>
 #include <sys/mman.h>
 #include <semaphore.h>
-#include <arpa/inet.h>
 #include <uuid/uuid.h>
+#include <arpa/inet.h>
 #include <sys/socket.h>
+#include <netinet/ip.h>
+#include <netinet/tcp.h>
