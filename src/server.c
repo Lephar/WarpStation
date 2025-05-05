@@ -52,6 +52,21 @@ void initialize() {
 
     retval = getsockopt(server, IPPROTO_TCP, TCP_NODELAY,  &optval, &optlen);
     assert(retval == 0 && optlen == 4 && optval == 1);
+
+    // Bind socket
+    const uint16_t port = 5316;
+
+    struct sockaddr_in address = {
+        .sin_family = AF_INET,
+        .sin_port = htons(port),
+        .sin_addr = {
+            .s_addr = INADDR_ANY
+        },
+        .sin_zero = {}
+    };
+
+    retval = bind(server, (struct sockaddr *) &address, sizeof(struct sockaddr_in));
+    assert(retval == 0);
 }
 
 void loop() {
