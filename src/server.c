@@ -11,19 +11,19 @@ void initialize() {
 
     int32_t  retval = 0;
     int32_t  optval = 0;
-    uint32_t optlen = sizeof(int32_t);
+    uint32_t optlen = sizeof(optval);
 
     // Set socket close on exit
     retval = fcntl(server, F_SETFD, FD_CLOEXEC);
     assert(retval == 0);
 
     // Enable socket address reuse
-    optval  = 1;
+    optval = 1;
     retval = setsockopt(server, SOL_SOCKET,  SO_REUSEADDR, &optval, optlen);
     assert(retval == 0);
 
     // Enable socket port reuse
-    optval  = 1;
+    optval = 1;
     retval = setsockopt(server, SOL_SOCKET,  SO_REUSEPORT, &optval, optlen);
     assert(retval == 0);
 
@@ -33,7 +33,7 @@ void initialize() {
     assert(retval == 0);
 
     // Disable Nagle's Algorithm
-    optval  = 1;
+    optval = 1;
     retval = setsockopt(server, IPPROTO_TCP, TCP_NODELAY,  &optval, optlen);
     assert(retval == 0);
 
