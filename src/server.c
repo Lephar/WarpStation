@@ -67,6 +67,10 @@ void initialize() {
 
     retval = bind(server, (struct sockaddr *) &address, sizeof(struct sockaddr_in));
     assert(retval == 0);
+
+    // Listen for connection
+    retval = listen(server, SOMAXCONN);
+    assert(retval == 0);
 }
 
 void loop() {
