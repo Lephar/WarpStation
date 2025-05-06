@@ -1,7 +1,5 @@
 #include "server.h"
 
-#include "logger.h"
-
 int32_t server;
 
 void initialize() {
@@ -13,7 +11,8 @@ void initialize() {
     int32_t  optval = 0;
     uint32_t optlen = sizeof(optval);
 
-    // Set socket close on exit
+#if DEBUG
+    // Set socket close on exec
     retval = fcntl(server, F_SETFD, FD_CLOEXEC);
     assert(retval == 0);
 
@@ -26,6 +25,7 @@ void initialize() {
     optval = 1;
     retval = setsockopt(server, SOL_SOCKET,  SO_REUSEPORT, &optval, optlen);
     assert(retval == 0);
+#endif
 
     // Set type of service to low delay
     optval = IPTOS_LOWDELAY;
@@ -38,6 +38,7 @@ void initialize() {
     assert(retval == 0);
 
     // Check if the values are properly set
+#if DEBUG
     retval = fcntl(server, F_GETFD, FD_CLOEXEC);
     assert(retval == FD_CLOEXEC);
 
@@ -46,6 +47,7 @@ void initialize() {
 
     retval = getsockopt(server, SOL_SOCKET,  SO_REUSEPORT, &optval, &optlen);
     assert(retval == 0 && optlen == 4 && optval == 1);
+#endif
 
     retval = getsockopt(server, IPPROTO_IP,  IP_TOS,       &optval, &optlen);
     assert(retval == 0 && optlen == 4 && optval == IPTOS_LOWDELAY);
