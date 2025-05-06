@@ -2,6 +2,28 @@
 
 int32_t server;
 
+void setFileDescriptorOptionInt(int32_t fd, int32_t val) {
+    int32_t retval = 0;
+
+    retval = fcntl(fd, F_SETFD, val);
+    assert(retval == 0);
+
+    retval = fcntl(fd, F_GETFD, val);
+    assert(retval == val);
+}
+
+void setSocketOptionInt(int32_t fd, int32_t level, int32_t optname, int32_t optval) {
+    int32_t  retval    = 0;
+    int32_t  retoptval = 0;
+    uint32_t retoptlen = 0;
+
+    retval = setsockopt(fd, level, optname, &optval, sizeof(int32_t));
+    assert(retval == 0);
+
+    retval = getsockopt(fd, level, optname, &retoptval, &retoptlen);
+    assert(retval == 0 && retoptlen == sizeof(int32_t) && retoptval == optval);
+}
+
 void initialize() {
     // Open IPv4 / TCP socket
     server = socket(AF_INET, SOCK_STREAM, 0);
