@@ -1,94 +1,43 @@
 #include "server.h"
 
+#include "helper.h"
+
 int32_t server;
-
-void setFileDescriptorOptionInt(int32_t fd, int32_t val) {
-    int32_t retval = 0;
-
-    retval = fcntl(fd, F_SETFD, val);
-    assert(retval == 0);
-
-    retval = fcntl(fd, F_GETFD, val);
-    assert(retval == val);
-}
-
-void setSocketOptionInt(int32_t fd, int32_t level, int32_t optname, int32_t optval) {
-    int32_t  retval    = 0;
-    int32_t  retoptval = 0;
-    uint32_t retoptlen = 0;
-
-    retval = setsockopt(fd, level, optname, &optval, sizeof(int32_t));
-    assert(retval == 0);
-
-    retval = getsockopt(fd, level, optname, &retoptval, &retoptlen);
-    assert(retval == 0 && retoptlen == sizeof(int32_t) && retoptval == optval);
-}
 
 void initialize() {
     // Open IPv4 / TCP socket
     server = socket(AF_INET, SOCK_STREAM, 0);
     assert(server != -1);
 
-    int32_t  retval = 0;
-    int32_t  optval = 0;
-    uint32_t optlen = sizeof(optval);
-
 #if DEBUG
     // Set socket close on exec
-    retval = fcntl(server, F_SETFD, FD_CLOEXEC);
-    assert(retval == 0);
+    setFileDescriptorOptionInt(server, FD_CLOEXEC);
 
     // Enable socket address reuse
-    optval = 1;
-    retval = setsockopt(server, SOL_SOCKET,  SO_REUSEADDR, &optval, optlen);
-    assert(retval == 0);
+    setSocketOptionInt(server, SOL_SOCKET, SO_REUSEADDR, 1);
 
     // Enable socket port reuse
-    optval = 1;
-    retval = setsockopt(server, SOL_SOCKET,  SO_REUSEPORT, &optval, optlen);
-    assert(retval == 0);
+    setSocketOptionInt(server, SOL_SOCKET, SO_REUSEPORT, 1);
 #endif
 
     // Set type of service to low delay
-    optval = IPTOS_LOWDELAY;
-    retval = setsockopt(server, IPPROTO_IP,  IP_TOS,       &optval, optlen);
-    assert(retval == 0);
+    setSocketOptionInt(server, IPPROTO_IP, IP_TOS, IPTOS_LOWDELAY);
 
     // Disable Nagle's Algorithm
-    optval = 1;
-    retval = setsockopt(server, IPPROTO_TCP, TCP_NODELAY,  &optval, optlen);
-    assert(retval == 0);
-
-    // Check if the values are properly set
-#if DEBUG
-    retval = fcntl(server, F_GETFD, FD_CLOEXEC);
-    assert(retval == FD_CLOEXEC);
-
-    retval = getsockopt(server, SOL_SOCKET,  SO_REUSEADDR, &optval, &optlen);
-    assert(retval == 0 && optlen == 4 && optval == 1);
-
-    retval = getsockopt(server, SOL_SOCKET,  SO_REUSEPORT, &optval, &optlen);
-    assert(retval == 0 && optlen == 4 && optval == 1);
-#endif
-
-    retval = getsockopt(server, IPPROTO_IP,  IP_TOS,       &optval, &optlen);
-    assert(retval == 0 && optlen == 4 && optval == IPTOS_LOWDELAY);
-
-    retval = getsockopt(server, IPPROTO_TCP, TCP_NODELAY,  &optval, &optlen);
-    assert(retval == 0 && optlen == 4 && optval == 1);
-
-    // Bind socket
-    const uint16_t port = 5316;
+    setSocketOptionInt(server, IPPROTO_TCP, TCP_NODELAY, 1);
 
     struct sockaddr_in address = {
         .sin_family = AF_INET,
-        .sin_port = htons(port),
+        .sin_port = htons(5316),
         .sin_addr = {
             .s_addr = INADDR_ANY
         },
         .sin_zero = {}
     };
 
+    int32_t retval = 0;
+
+    // Bind socket
     retval = bind(server, (struct sockaddr *) &address, sizeof(struct sockaddr_in));
     assert(retval == 0);
 
@@ -98,7 +47,6 @@ void initialize() {
 }
 
 void loop() {
-
 }
 
 void quit() {
