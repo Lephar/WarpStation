@@ -7,7 +7,7 @@
 
 int32_t server;
 
-void initialize() {
+void initServer() {
     // Open IPv4 / TCP socket
     server = socket(AF_INET, SOCK_STREAM, 0);
     assert(server != -1);
@@ -49,7 +49,7 @@ void initialize() {
     assert(retval == 0);
 }
 
-void loop() {
+void loopServer() {
     while(1) {
         struct sockaddr_in addr = {};
         socklen_t addrlen = sizeof(addr);
@@ -68,6 +68,6 @@ void loop() {
     }
 }
 
-void quit() {
+void quitServer() {
     close(server);
 }

@@ -2,6 +2,6 @@
 
 #include "pch.h"
 
-void initialize();
-void loop();
-void quit();
+void initServer();
+void loopServer();
+void quitServer();
