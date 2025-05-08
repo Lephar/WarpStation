@@ -54,7 +54,7 @@ void loopServer() {
         struct sockaddr_in addr = {};
         socklen_t addr_len = sizeof(addr);
 
-        int32_t fd = accept(server, (struct sockaddr *) &addr, &addr_len);
+        const int32_t fd = accept(server, (struct sockaddr *) &addr, &addr_len);
 
         // TODO: Of course we won't terminate whole server because of a faulty incoming connection
         assert(fd != -1);

@@ -2,8 +2,8 @@
 
 #include "logger.h"
 
-void dispatchClient(int32_t fd, struct sockaddr_in addr) {
-    Client client = {
+void dispatchClient(const int32_t fd, const struct sockaddr_in addr) {
+    const Client client = {
         .fd = fd,
         .ip = addr.sin_addr,
         .port = addr.sin_port,

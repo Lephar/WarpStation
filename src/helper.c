@@ -3,7 +3,7 @@
 #include "logger.h"
 
 // TODO: Does this override previously set flags?
-void setFileDescriptorOptionInt(int32_t fd, int32_t val) {
+void setFileDescriptorOptionInt(const int32_t fd, const int32_t val) {
     int32_t retval = fcntl(fd, F_SETFD, val);
     assert(retval == 0);
 
@@ -13,7 +13,7 @@ void setFileDescriptorOptionInt(int32_t fd, int32_t val) {
 #endif
 }
 
-void setSocketOptionInt(int32_t fd, int32_t level, int32_t optname, int32_t optval) {
+void setSocketOptionInt(const int32_t fd, const int32_t level, const int32_t optname, const int32_t optval) {
     int32_t retval = setsockopt(fd, level, optname, &optval, sizeof(int32_t));
     assert(retval == 0);
 
