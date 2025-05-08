@@ -2,7 +2,7 @@
 
 void debug(const char *fmt, ...) {
     if(DEBUG) {
-        va_list args;
+        va_list args = NULL;
         va_start(args, fmt);
         vprintf(fmt, args);
         printf("\n");

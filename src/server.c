@@ -3,7 +3,6 @@
 #include "client.h"
 
 #include "helper.h"
-#include "logger.h"
 
 int32_t server;
 
