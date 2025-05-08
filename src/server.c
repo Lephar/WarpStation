@@ -1,5 +1,7 @@
 #include "server.h"
 
+#include "client.h"
+
 #include "helper.h"
 #include "logger.h"
 
@@ -52,14 +54,17 @@ void loop() {
         struct sockaddr_in addr = {};
         socklen_t addrlen = sizeof(addr);
 
-        int32_t client = accept(server, (struct sockaddr *) &addr, &addrlen);
-        assert(client != -1);
+        int32_t fd = accept(server, (struct sockaddr *) &addr, &addrlen);
+        assert(fd != -1);
 
-        char *ip = inet_ntoa(addr.sin_addr);
-        uint16_t port = ntohs(addr.sin_port);
+        Client client = {
+            .fd = fd,
+            .ip = addr.sin_addr,
+            .port = addr.sin_port,
+        };
 
-        debug("IP:   %s", ip);
-        debug("Port: %d", port);
+        debug("IP:   %s", inet_ntoa(client.ip));
+        debug("Port: %d", ntohs(client.port));
     }
 }
 
