@@ -9,3 +9,5 @@ struct client {
     in_port_t port;
     pthread_t thread;
 } typedef Client;
+
+void dispatchClient(int32_t fd, struct sockaddr_in addr);
