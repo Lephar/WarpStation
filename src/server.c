@@ -58,7 +58,7 @@ void loopServer() {
         // TODO: Of course we won't terminate whole server because of a faulty incoming connection
         assert(fd != -1);
 
-        dispatchClient(fd, addr);
+        processClient(fd, addr);
     }
 }
 
