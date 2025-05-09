@@ -4,6 +4,9 @@
 
 #include "helper.h"
 
+char ip[INET_ADDRSTRLEN];
+uint16_t port;
+
 int32_t server;
 
 void initServer() {
@@ -30,9 +33,9 @@ void initServer() {
 
     struct sockaddr_in address = {
         .sin_family = AF_INET,
-        .sin_port = htons(5316),
+        .sin_port = htons(port),
         .sin_addr = {
-            .s_addr = INADDR_ANY
+            .s_addr = inet_addr(ip)
         },
         .sin_zero = {}
     };
