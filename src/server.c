@@ -1,37 +1,20 @@
 #include "server.h"
 
-#include "client.h"
-
-#include "helper.h"
+#include "connection.h"
+#include "logger.h"
 
 char ip[INET_ADDRSTRLEN];
 uint16_t port;
 
-int32_t server;
+Connection *server;
 
 void initServer() {
     // Open IPv4 / TCP socket
-    server = socket(AF_INET, SOCK_STREAM, 0);
-    assert(server != -1);
+    int32_t retval = socket(AF_INET, SOCK_STREAM, 0);
+    assert(retval != -1);
+    debug("Server socket created:");
 
-#if DEBUG
-    // Set socket close on exec
-    setFileDescriptorOptionInt(server, FD_CLOEXEC);
-
-    // Enable socket address reuse
-    setSocketOptionInt(server, SOL_SOCKET, SO_REUSEADDR, 1);
-
-    // Enable socket port reuse
-    setSocketOptionInt(server, SOL_SOCKET, SO_REUSEPORT, 1);
-#endif
-
-    // Set type of service to low delay
-    setSocketOptionInt(server, IPPROTO_IP, IP_TOS, IPTOS_LOWDELAY);
-
-    // Disable Nagle's Algorithm
-    setSocketOptionInt(server, IPPROTO_TCP, TCP_NODELAY, 1);
-
-    struct sockaddr_in address = {
+    struct sockaddr_in addr = {
         .sin_family = AF_INET,
         .sin_port = htons(port),
         .sin_addr = {
@@ -40,15 +23,23 @@ void initServer() {
         .sin_zero = {}
     };
 
-    int32_t retval = 0;
+    server = createConn(retval, addr);
+
+#if DEBUG
+    setConnReuseOpts(server);
+#endif
 
     // Bind socket
-    retval = bind(server, (struct sockaddr *) &address, sizeof(struct sockaddr_in));
+    retval = bind(server->fd, (struct sockaddr *) &addr, sizeof(struct sockaddr_in));
     assert(retval == 0);
+    debug("\tAddress bound");
+
+    setConnOptimOpts(server);
 
     // Listen for connection
-    retval = listen(server, SOMAXCONN);
+    retval = listen(server->fd, SOMAXCONN);
     assert(retval == 0);
+    debug("\tStarted listening");
 }
 
 void loopServer() {
@@ -56,15 +47,19 @@ void loopServer() {
         struct sockaddr_in addr = {};
         socklen_t addr_len = sizeof(addr);
 
-        const int32_t fd = accept(server, (struct sockaddr *) &addr, &addr_len);
+        const int32_t retval = accept(server->fd, (struct sockaddr *) &addr, &addr_len);
 
-        // TODO: Of course we won't terminate whole server because of a faulty incoming connection
-        assert(fd != -1);
+        if(retval == -1) {
+            debug("Failed to accept connection");
+            continue;
+        }
 
-        processClient(fd, addr);
+        debug("Client connection accepted:");
+        Connection *client = createConn(retval, addr);
+        setConnOptimOpts(client);
     }
 }
 
 void quitServer() {
-    close(server);
+    destroyConn(server);
 }
