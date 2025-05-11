@@ -3,7 +3,7 @@
 #include "logger.h"
 
 // TODO: Does this override previously set flags?
-void setFd(const int32_t fd, const int32_t val) {
+void setFd(int32_t fd, int32_t val) {
     int32_t retval = fcntl(fd, F_SETFD, val);
     assert(retval == 0);
 
@@ -13,7 +13,7 @@ void setFd(const int32_t fd, const int32_t val) {
 #endif
 }
 
-void setSockOptInt(const int32_t fd, const int32_t level, const int32_t optname, const int32_t optval) {
+void setSockOptInt(int32_t fd, int32_t level, int32_t optname, int32_t optval) {
     int32_t retval = setsockopt(fd, level, optname, &optval, sizeof(int32_t));
     assert(retval == 0);
 
@@ -26,7 +26,7 @@ void setSockOptInt(const int32_t fd, const int32_t level, const int32_t optname,
 #endif
 }
 
-void setConnReuseOpts(const Connection *conn)
+void setConnReuseOpts(Connection *conn)
 {
     // Set socket close on exec
     setFd(conn->fd, FD_CLOEXEC);
@@ -41,7 +41,7 @@ void setConnReuseOpts(const Connection *conn)
     debug("\tSocket port reuse enabled");
 }
 
-void setConnOptimOpts(const Connection *conn)
+void setConnOptimOpts(Connection *conn)
 {
     // Set type of service to low delay
     setSockOptInt(conn->fd, IPPROTO_IP,  IP_TOS,      IPTOS_LOWDELAY);
@@ -52,7 +52,7 @@ void setConnOptimOpts(const Connection *conn)
     debug("\tNagle's Algorithm disabled");
 }
 
-Connection *createConn(const int32_t fd, const struct sockaddr_in addr)
+Connection *createConn(int32_t fd, struct sockaddr_in addr)
 {
     Connection *conn = malloc(sizeof(Connection));
 
@@ -62,7 +62,7 @@ Connection *createConn(const int32_t fd, const struct sockaddr_in addr)
 
     uuid_generate(conn->uuid);
 
-    const char uuid[UUID_STR_LEN];
+    char uuid[UUID_STR_LEN];
     uuid_unparse_lower(conn->uuid, uuid);
     const char *ip = inet_ntoa(conn->ip);
     const uint16_t port = ntohs(conn->port);

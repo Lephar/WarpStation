@@ -15,12 +15,11 @@ void configure(const int argc, const char *argv[]) {
 
     char *separator = strrchr(argv[0], '/');
 
-    char *result = NULL;
     int32_t length = 0;
 
-    if(separator == NULL) {
-        result = getcwd(rootPath, PATH_MAX);
-        assert(result != NULL);
+    if(separator == nullptr) {
+        char *result = getcwd(rootPath, PATH_MAX);
+        assert(result != nullptr);
 
         length = snprintf(executableName, PATH_MAX, "%s", argv[0]);
         assert(length < PATH_MAX);

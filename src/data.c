@@ -38,7 +38,7 @@ Data *makeData(bool binary, size_t size, const void *content) {
 void freeData(Data *data) {
     free(data->content);
 
-    data->content = NULL;
+    data->content = nullptr;
     data->size = 0;
 
     free(data);

@@ -4,7 +4,7 @@
 #include "data.h"
 
 void makeFullPath(const char *subdirectory, const char *filename, char outFullPath[]) {
-    if(subdirectory == NULL || strncmp(subdirectory, "", PATH_MAX) == 0) {
+    if(subdirectory == nullptr || strncmp(subdirectory, "", PATH_MAX) == 0) {
         snprintf(outFullPath, PATH_MAX, "%s/%s", rootPath, filename);
     } else {
         snprintf(outFullPath, PATH_MAX, "%s/%s/%s", rootPath, subdirectory, filename);
