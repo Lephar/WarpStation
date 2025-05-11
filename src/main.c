@@ -4,9 +4,8 @@
 int main(const int argc, const char *argv[]) {
     configure(argc, argv);
 
-    initServer();
-    loopServer();
-    quitServer();
+    dispatchServer();
+    commandLoop();
 
     return EXIT_SUCCESS;
 }

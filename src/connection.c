@@ -2,7 +2,6 @@
 
 #include "logger.h"
 
-// TODO: Does this override previously set flags?
 void setFd(int32_t fd, int32_t val) {
     int32_t retval = fcntl(fd, F_SETFD, val);
     assert(retval == 0);

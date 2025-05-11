@@ -6,9 +6,55 @@
 char ip[INET_ADDRSTRLEN];
 uint16_t port;
 
-Connection *server;
+Connection* server;
+sem_t sem;
 
-void initServer() {
+void commandLoop()
+{
+    char command[UINT8_MAX];
+
+    while(true) {
+        scanf("%s", command);
+
+        if( strcmp(command, "q") == 0    ||
+            strcmp(command, "quit") == 0 ||
+            strcmp(command, "e") == 0    ||
+            strcmp(command, "exit") == 0) {
+            sem_post(&sem);
+
+            pthread_cancel(server->thread);
+            pthread_join(server->thread, nullptr);
+
+            destroyConn(server);
+
+            break;
+        }
+    }
+}
+
+void *serverLoop(void *param) {
+    (void) param;
+
+    while(sem_trywait(&sem) != 0) {
+        struct sockaddr_in addr = {};
+        socklen_t addr_len = sizeof(addr);
+
+        const int32_t retval = accept(server->fd, (struct sockaddr *) &addr, &addr_len);
+
+        if(retval == -1) {
+            debug("Failed to accept connection");
+            continue;
+        }
+
+        debug("Client connection accepted:");
+        Connection *client = createConn(retval, addr);
+        setConnOptimOpts(client);
+    }
+
+    return nullptr;
+}
+
+void dispatchServer() {
     // Open IPv4 / TCP socket
     int32_t retval = socket(AF_INET, SOCK_STREAM, 0);
     assert(retval != -1);
@@ -40,26 +86,7 @@ void initServer() {
     retval = listen(server->fd, SOMAXCONN);
     assert(retval == 0);
     debug("\tStarted listening");
-}
 
-void loopServer() {
-    while(1) {
-        struct sockaddr_in addr = {};
-        socklen_t addr_len = sizeof(addr);
-
-        const int32_t retval = accept(server->fd, (struct sockaddr *) &addr, &addr_len);
-
-        if(retval == -1) {
-            debug("Failed to accept connection");
-            continue;
-        }
-
-        debug("Client connection accepted:");
-        Connection *client = createConn(retval, addr);
-        setConnOptimOpts(client);
-    }
-}
-
-void quitServer() {
-    destroyConn(server);
+    sem_init(&sem, 0, 0);
+    pthread_create(&server->thread, nullptr, serverLoop, nullptr);
 }
