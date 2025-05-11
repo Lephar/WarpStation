@@ -1,6 +1,8 @@
 #include "server.h"
 
 #include "connection.h"
+#include "client.h"
+
 #include "logger.h"
 
 char ip[INET_ADDRSTRLEN];
@@ -43,12 +45,9 @@ void *serverLoop(void *param) {
 
         if(retval == -1) {
             debug("Failed to accept connection");
-            continue;
+        } else {
+            dispatchClient(retval, addr);
         }
-
-        debug("Client connection accepted:");
-        Connection *client = createConn(retval, addr);
-        setConnOptimOpts(client);
     }
 
     return nullptr;
