@@ -9,7 +9,6 @@ char ip[INET_ADDRSTRLEN];
 uint16_t port;
 
 Connection* server;
-sem_t sem;
 
 void commandLoop()
 {
@@ -22,8 +21,6 @@ void commandLoop()
             strcmp(command, "quit") == 0 ||
             strcmp(command, "e") == 0    ||
             strcmp(command, "exit") == 0) {
-            sem_post(&sem);
-
             pthread_cancel(server->thread);
             pthread_join(server->thread, nullptr);
 
@@ -37,7 +34,7 @@ void commandLoop()
 void *serverLoop(void *param) {
     (void) param;
 
-    while(sem_trywait(&sem) != 0) {
+    while(true) {
         struct sockaddr_in addr = {};
         socklen_t addr_len = sizeof(addr);
 
@@ -86,6 +83,5 @@ void dispatchServer() {
     assert(retval == 0);
     debug("\tStarted listening");
 
-    sem_init(&sem, 0, 0);
     pthread_create(&server->thread, nullptr, serverLoop, nullptr);
 }
