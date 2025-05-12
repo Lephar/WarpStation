@@ -59,6 +59,19 @@ void removeClient(Connection *conn) {
     }
 }
 
+void printClientList() {
+    debug("Client list:");
+
+    Client *iter = head->next;
+
+    while(iter != tail) {
+        char uuid[UUID_STR_LEN];
+        uuid_unparse_lower(iter->conn->uuid, uuid);
+        debug("\t%s", uuid);
+        iter = iter->next;
+    }
+}
+
 void *clientLoop(void *param) {
     while(true) {
 
