@@ -73,12 +73,19 @@ Connection *createConn(int32_t fd, struct sockaddr_in addr)
     return conn;
 }
 
-void destroyConn(Connection *connection)
+void destroyConn(Connection *conn)
 {
-    pthread_cancel(connection->thread);
-    pthread_join(connection->thread, nullptr);
+    char uuid[UUID_STR_LEN];
+    uuid_unparse_lower(conn->uuid, uuid);
+    debug("Connection: %s", uuid);
 
-    close(connection->fd);
+    pthread_cancel(conn->thread);
+    pthread_join(conn->thread, nullptr);
+    debug("\tThread cancelled");
 
-    free(connection);
+    close(conn->fd);
+    debug("\tConnection closed");
+
+    free(conn);
+    debug("\tMemory freed");
 }

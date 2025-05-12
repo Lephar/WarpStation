@@ -14,4 +14,4 @@ void setConnReuseOpts(Connection *conn);
 void setConnOptimOpts(Connection *conn);
 
 Connection *createConn(int32_t fd, struct sockaddr_in addr);
-void destroyConn(Connection *connection);
+void destroyConn(Connection *conn);
