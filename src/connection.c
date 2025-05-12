@@ -75,6 +75,9 @@ Connection *createConn(int32_t fd, struct sockaddr_in addr)
 
 void destroyConn(Connection *connection)
 {
+    pthread_cancel(connection->thread);
+    pthread_join(connection->thread, nullptr);
+
     close(connection->fd);
 
     free(connection);

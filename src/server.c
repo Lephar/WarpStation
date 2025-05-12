@@ -21,11 +21,7 @@ void commandLoop()
             strcmp(command, "quit") == 0 ||
             strcmp(command, "e") == 0    ||
             strcmp(command, "exit") == 0) {
-            pthread_cancel(server->thread);
-            pthread_join(server->thread, nullptr);
-
             destroyConn(server);
-
             break;
         }
     }
