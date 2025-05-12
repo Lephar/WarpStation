@@ -83,5 +83,6 @@ void dispatchServer() {
     assert(retval == 0);
     debug("\tStarted listening");
 
+    initClientList();
     pthread_create(&server->thread, nullptr, serverLoop, nullptr);
 }

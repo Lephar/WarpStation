@@ -32,8 +32,10 @@ void addClient(Connection *conn) {
     client->conn = conn;
     client->next = tail;
 
-    tail->next = client;
     tail->prev->next = client;
+    tail->prev = client;
+
+    return client;
 }
 
 void removeClient(Connection *conn) {
