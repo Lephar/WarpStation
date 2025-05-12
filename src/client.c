@@ -25,7 +25,7 @@ void initClientList() {
     tail->next = nullptr;
 }
 
-void addClient(Connection *conn) {
+Client *addClient(Connection *conn) {
     Client *client = malloc(sizeof(Client));
 
     client->prev = tail->prev;
@@ -73,9 +73,13 @@ void printClientList() {
 }
 
 void *clientLoop(void *param) {
+    Client *client = param;
+
     while(true) {
 
     }
+
+    removeClient(client->conn);
 
     return nullptr;
 }
@@ -86,5 +90,8 @@ void dispatchClient(int32_t fd, struct sockaddr_in addr) {
     Connection *conn = createConn(fd, addr);
     setConnOptimOpts(conn);
 
-    pthread_create(&conn->thread, nullptr, clientLoop, conn);
+    Client *client = addClient(conn);
+    printClientList();
+
+    pthread_create(&conn->thread, nullptr, clientLoop, client);
 }
