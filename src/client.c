@@ -1,6 +1,7 @@
 #include "client.h"
 
 #include "connection.h"
+
 #include "logger.h"
 
 struct client {
@@ -9,10 +10,15 @@ struct client {
     struct client *next;
 } typedef Client;
 
+pthread_rwlock_t listLock;
+
 Client *head;
 Client *tail;
 
 void initClientList() {
+    pthread_rwlock_init(&listLock, NULL);
+    pthread_rwlock_wrlock(&listLock);
+
     head = malloc(sizeof(Client));
     tail = malloc(sizeof(Client));
 
@@ -23,10 +29,14 @@ void initClientList() {
     tail->prev = head;
     tail->conn = nullptr;
     tail->next = nullptr;
+
+    pthread_rwlock_unlock(&listLock);
 }
 
 Client *addClient(Connection *conn) {
     Client *client = malloc(sizeof(Client));
+
+    pthread_rwlock_wrlock(&listLock);
 
     client->prev = tail->prev;
     client->conn = conn;
@@ -35,10 +45,14 @@ Client *addClient(Connection *conn) {
     tail->prev->next = client;
     tail->prev = client;
 
+    pthread_rwlock_unlock(&listLock);
+
     return client;
 }
 
 void removeClient(Connection *conn) {
+    pthread_rwlock_wrlock(&listLock);
+
     Client *iter = head->next;
 
     while(iter != tail) {
@@ -54,12 +68,16 @@ void removeClient(Connection *conn) {
 
             free(iter);
 
-            return;
+            break;
         }
     }
+
+    pthread_rwlock_unlock(&listLock);
 }
 
 void printClientList() {
+    pthread_rwlock_rdlock(&listLock);
+
     debug("Client list:");
 
     Client *iter = head->next;
@@ -67,9 +85,13 @@ void printClientList() {
     while(iter != tail) {
         char uuid[UUID_STR_LEN];
         uuid_unparse_lower(iter->conn->uuid, uuid);
+
         debug("\t%s", uuid);
+
         iter = iter->next;
     }
+
+    pthread_rwlock_unlock(&listLock);
 }
 
 void *clientLoop(void *param) {
