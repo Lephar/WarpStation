@@ -21,6 +21,7 @@ void commandLoop()
             strcmp(command, "quit") == 0 ||
             strcmp(command, "e") == 0    ||
             strcmp(command, "exit") == 0) {
+            debug("Server stopped:");
             destroyConn(server);
             break;
         }
@@ -50,7 +51,7 @@ void dispatchServer() {
     // Open IPv4 / TCP socket
     int32_t retval = socket(AF_INET, SOCK_STREAM, 0);
     assert(retval != -1);
-    debug("Server socket created:");
+    debug("Server started:");
 
     struct sockaddr_in addr = {
         .sin_family = AF_INET,
