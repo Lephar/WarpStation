@@ -64,4 +64,6 @@ void configure(const int argc, const char *argv[]) {
     debug("\tPort: %hu", port);
 
     fclose(file);
+
+    srand(time(nullptr));
 }
