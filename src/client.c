@@ -33,6 +33,27 @@ void initClientList() {
     pthread_rwlock_unlock(&listLock);
 }
 
+void printClientList() {
+    pthread_rwlock_rdlock(&listLock);
+
+    Client *iter = head->next;
+
+    if(iter != tail) {
+        debug("Client list:");
+    }
+
+    while(iter != tail) {
+        char uuid[UUID_STR_LEN];
+        uuid_unparse_lower(iter->conn->uuid, uuid);
+
+        debug("\t%s", uuid);
+
+        iter = iter->next;
+    }
+
+    pthread_rwlock_unlock(&listLock);
+}
+
 Client *addClient(Connection *conn) {
     Client *client = malloc(sizeof(Client));
 
@@ -46,6 +67,8 @@ Client *addClient(Connection *conn) {
     tail->prev = client;
 
     pthread_rwlock_unlock(&listLock);
+
+    printClientList();
 
     return client;
 }
@@ -73,6 +96,8 @@ void removeClient(Connection *conn) {
     }
 
     pthread_rwlock_unlock(&listLock);
+
+    printClientList();
 }
 
 void printClientList() {
@@ -99,21 +124,18 @@ void *clientLoop(void *param) {
 
     while(true) {
 
-    }
-
+    debug("Client disconnected:");
     removeClient(client->conn);
 
     return nullptr;
 }
 
 void dispatchClient(int32_t fd, struct sockaddr_in addr) {
-    debug("Client connection accepted");
+    debug("Client connected:");
 
     Connection *conn = createConn(fd, addr);
     setConnOptimOpts(conn);
 
     Client *client = addClient(conn);
-    printClientList();
-
     pthread_create(&conn->thread, nullptr, clientLoop, client);
 }
