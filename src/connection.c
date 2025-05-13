@@ -51,6 +51,17 @@ void setConnOptimOpts(Connection *conn)
     debug("\tNagle's Algorithm disabled");
 }
 
+void printConn(Connection *conn) {
+    char uuid[UUID_STR_LEN];
+    uuid_unparse_lower(conn->uuid, uuid);
+    const char *ip = inet_ntoa(conn->ip);
+    const uint16_t port = ntohs(conn->port);
+
+    debug("\tUUID: %s",  uuid);
+    debug("\tIP:   %s",  ip);
+    debug("\tPort: %hu", port);
+}
+
 Connection *createConn(int32_t fd, struct sockaddr_in addr)
 {
     Connection *conn = malloc(sizeof(Connection));
@@ -61,23 +72,14 @@ Connection *createConn(int32_t fd, struct sockaddr_in addr)
 
     uuid_generate(conn->uuid);
 
-    char uuid[UUID_STR_LEN];
-    uuid_unparse_lower(conn->uuid, uuid);
-    const char *ip = inet_ntoa(conn->ip);
-    const uint16_t port = ntohs(conn->port);
-
-    debug("\tUUID: %s",  uuid);
-    debug("\tIP:   %s",  ip);
-    debug("\tPort: %hu", port);
+    printConn(conn);
 
     return conn;
 }
 
 void destroyConn(Connection *conn)
 {
-    char uuid[UUID_STR_LEN];
-    uuid_unparse_lower(conn->uuid, uuid);
-    debug("Connection: %s", uuid);
+    printConn(conn);
 
     pthread_cancel(conn->thread);
     pthread_join(conn->thread, nullptr);
