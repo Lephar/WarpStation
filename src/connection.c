@@ -81,10 +81,6 @@ void destroyConn(Connection *conn)
 {
     printConn(conn);
 
-    pthread_cancel(conn->thread);
-    pthread_join(conn->thread, nullptr);
-    debug("\tThread cancelled");
-
     close(conn->fd);
     debug("\tConnection closed");
 

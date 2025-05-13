@@ -100,29 +100,10 @@ void removeClient(Connection *conn) {
     printClientList();
 }
 
-void printClientList() {
-    pthread_rwlock_rdlock(&listLock);
-
-    debug("Client list:");
-
-    Client *iter = head->next;
-
-    while(iter != tail) {
-        char uuid[UUID_STR_LEN];
-        uuid_unparse_lower(iter->conn->uuid, uuid);
-
-        debug("\t%s", uuid);
-
-        iter = iter->next;
-    }
-
-    pthread_rwlock_unlock(&listLock);
-}
-
 void *clientLoop(void *param) {
     Client *client = param;
 
-    while(true) {
+    sleep(5 + rand() % 10);
 
     debug("Client disconnected:");
     removeClient(client->conn);
