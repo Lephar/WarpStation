@@ -38,7 +38,9 @@ void printClientList() {
 
     Client *iter = head->next;
 
-    if(iter != tail) {
+    if(iter == tail) {
+        debug("Client list empty");
+    } else {
         debug("Client list:");
     }
 
