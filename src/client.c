@@ -93,6 +93,8 @@ void removeClient(Connection *conn) {
 
             break;
         }
+
+        iter = iter->next;
     }
 
     pthread_rwlock_unlock(&listLock);
