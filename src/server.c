@@ -8,7 +8,7 @@
 char ip[INET_ADDRSTRLEN];
 uint16_t port;
 
-Connection* server;
+Conn* server;
 
 void commandLoop()
 {
@@ -55,14 +55,14 @@ void dispatchServer() {
 
     struct sockaddr_in addr = {
         .sin_family = AF_INET,
-        .sin_port = htons(port),
-        .sin_addr = {
-            .s_addr = inet_addr(ip)
+        .sin_port   = htons(port),
+        .sin_addr   = {
+            .s_addr = inet_addr(ip),
         },
-        .sin_zero = {}
+        .sin_zero   = {}
     };
 
-    server = createConn(retval, addr);
+    server = makeConn(retval, addr);
 
 #if DEBUG
     setConnReuseOpts(server);

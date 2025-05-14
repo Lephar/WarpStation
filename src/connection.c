@@ -25,8 +25,7 @@ void setSockOptInt(int32_t fd, int32_t level, int32_t optname, int32_t optval) {
 #endif
 }
 
-void setConnReuseOpts(Connection *conn)
-{
+void setConnReuseOpts(Conn *conn) {
     // Set socket close on exec
     setFd(conn->fd, FD_CLOEXEC);
     debug("\tSocket close on exec set");
@@ -40,8 +39,7 @@ void setConnReuseOpts(Connection *conn)
     debug("\tSocket port reuse enabled");
 }
 
-void setConnOptimOpts(Connection *conn)
-{
+void setConnOptimOpts(Conn *conn) {
     // Set type of service to low delay
     setSockOptInt(conn->fd, IPPROTO_IP,  IP_TOS,      IPTOS_LOWDELAY);
     debug("\tType of service set to low delay");
@@ -51,38 +49,45 @@ void setConnOptimOpts(Connection *conn)
     debug("\tNagle's Algorithm disabled");
 }
 
-void printConn(Connection *conn) {
-    char uuid[UUID_STR_LEN];
-    uuid_unparse_lower(conn->uuid, uuid);
-    const char *ip = inet_ntoa(conn->ip);
-    const uint16_t port = ntohs(conn->port);
+Conn *makeConn(int32_t fd, struct sockaddr_in addr) {
+    Conn *conn = malloc(sizeof(Conn));
 
-    debug("\tUUID: %s",  uuid);
-    debug("\tIP:   %s",  ip);
-    debug("\tPort: %hu", port);
-}
-
-Connection *createConn(int32_t fd, struct sockaddr_in addr)
-{
-    Connection *conn = malloc(sizeof(Connection));
-
-    conn->fd = fd;
-    conn->ip = addr.sin_addr;
-    conn->port = addr.sin_port;
+    conn->prev = nullptr;
 
     uuid_generate(conn->uuid);
+
+    conn->fd = fd;
+    conn->addr = addr;
+
+    conn->thread = ULONG_MAX;
+
+    conn->next = nullptr;
 
     printConn(conn);
 
     return conn;
 }
 
-void destroyConn(Connection *conn)
+void printConn(Conn *conn) {
+    char uuid[UUID_STR_LEN];
+    uuid_unparse_lower(conn->uuid, uuid);
+
+    char ip[INET_ADDRSTRLEN];
+    inet_ntop(conn->addr.sin_family, &conn->addr.sin_addr, ip, INET_ADDRSTRLEN);
+
+    const uint16_t port = ntohs(conn->addr.sin_port);
+
+    debug("\tUUID: %s",  uuid);
+    debug("\tIP:   %s",  ip);
+    debug("\tPort: %hu", port);
+}
+
+void destroyConn(Conn *conn)
 {
     printConn(conn);
 
     close(conn->fd);
-    debug("\tConnection closed");
+    debug("\tSocket closed");
 
     free(conn);
     debug("\tMemory freed");

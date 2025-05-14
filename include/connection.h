@@ -2,16 +2,18 @@
 
 #include "pch.h"
 
-struct connection {
-    int32_t fd;
-    struct in_addr ip;
-    in_port_t port;
+struct conn {
+    struct conn *prev;
     uuid_t uuid;
+    int32_t fd;
+    struct sockaddr_in addr;
     pthread_t thread;
-} typedef Connection;
+    struct conn *next;
+} typedef Conn;
 
-void setConnReuseOpts(Connection *conn);
-void setConnOptimOpts(Connection *conn);
+void setConnReuseOpts(Conn *conn);
+void setConnOptimOpts(Conn *conn);
 
-Connection *createConn(int32_t fd, struct sockaddr_in addr);
-void destroyConn(Connection *conn);
+Conn *makeConn(int32_t fd, struct sockaddr_in addr);
+void printConn(Conn *conn);
+void destroyConn(Conn *conn);
