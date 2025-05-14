@@ -40,6 +40,10 @@ void setConnReuseOpts(Conn *conn) {
 }
 
 void setConnOptimOpts(Conn *conn) {
+    // Set socket priority to max possible value, can be increased with CAP_NET_ADMIN capabilities
+    setSockOptInt(conn->fd, SOL_SOCKET,  SO_PRIORITY, 6);
+    debug("\tSocket priority set to the highest possible value");
+
     // Set type of service to low delay
     setSockOptInt(conn->fd, IPPROTO_IP,  IP_TOS,      IPTOS_LOWDELAY);
     debug("\tType of service set to low delay");
