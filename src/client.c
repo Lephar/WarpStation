@@ -111,6 +111,18 @@ void dispatchClient(int32_t fd, struct sockaddr_in addr) {
 }
 
 void destroyClientList() {
+    Conn *iter = head->next;
+
+    while(iter != tail) {
+        Conn *next = iter->next;
+        removeClient(iter);
+
+        debug("Removed connection:");
+        destroyConn(iter);
+
+        iter = next;
+    }
+
     debug("Destroyed list tail:");
     destroyConn(tail);
 
