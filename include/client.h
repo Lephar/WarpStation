@@ -5,3 +5,4 @@
 void initClientList();
 void printClientList();
 void dispatchClient(int32_t fd, struct sockaddr_in addr);
+void destroyClientList();

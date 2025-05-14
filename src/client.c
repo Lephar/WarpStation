@@ -109,3 +109,11 @@ void dispatchClient(int32_t fd, struct sockaddr_in addr) {
 
     pthread_create(&conn->thread, nullptr, clientLoop, conn);
 }
+
+void destroyClientList() {
+    debug("Destroyed list tail:");
+    destroyConn(tail);
+
+    debug("Destroyed list head:");
+    destroyConn(head);
+}

@@ -23,6 +23,7 @@ void commandLoop()
             strcmp(command, "exit") == 0) {
             debug("Server stopped:");
             destroyConn(server);
+            destroyClientList();
             break;
         }
     }
