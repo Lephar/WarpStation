@@ -16,14 +16,17 @@ void commandLoop() {
     while(true) {
         scanf("%s", command);
 
-        if( strcmp(command, "q") == 0    ||
+        if( strcmp(command, "q")    == 0 ||
             strcmp(command, "quit") == 0 ||
-            strcmp(command, "e") == 0    ||
+            strcmp(command, "e")    == 0 ||
             strcmp(command, "exit") == 0) {
             debug("Server stopped:");
             destroyConn(server);
             destroyClientList();
             break;
+        } if(   strcmp(command, "p")     == 0 ||
+                strcmp(command, "print") == 0) {
+            printClientList();
         }
     }
 }
