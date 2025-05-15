@@ -10,7 +10,7 @@ Conn *head;
 Conn *tail;
 
 void initClientList() {
-    pthread_rwlock_init(&listLock, NULL);
+    pthread_rwlock_init(&listLock, nullptr);
     pthread_rwlock_wrlock(&listLock);
 
     int32_t fd = INT32_MIN;

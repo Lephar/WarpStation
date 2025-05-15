@@ -7,7 +7,7 @@
 char rootPath[PATH_MAX];
 char executableName[PATH_MAX];
 
-void configure(const int argc, const char *argv[]) {
+void configure(int argc, const char *argv[]) {
     debug("argc: %d", argc);
     for(int32_t argn = 0; argn < argc; argn++) {
         debug("\targv[%d]: %s", argn, argv[argn]);

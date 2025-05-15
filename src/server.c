@@ -10,8 +10,7 @@ uint16_t port;
 
 Conn* server;
 
-void commandLoop()
-{
+void commandLoop() {
     char command[UINT8_MAX];
 
     while(true) {

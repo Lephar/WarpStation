@@ -3,8 +3,8 @@
 Data *wrapData(bool binary, size_t size, void *content) {
     Data *data = malloc(sizeof(Data));
 
-    data->binary = binary;
-    data->size = size;
+    data->binary  = binary;
+    data->size    = size;
     data->content = content;
 
     return data;
@@ -13,8 +13,8 @@ Data *wrapData(bool binary, size_t size, void *content) {
 Data *allocateData(bool binary, size_t size) {
     Data *data = malloc(sizeof(Data));
 
-    data->binary = binary;
-    data->size = size;
+    data->binary  = binary;
+    data->size    = size;
     data->content = malloc(size);
 
     return data;
@@ -22,7 +22,7 @@ Data *allocateData(bool binary, size_t size) {
 
 void copyData(const Data *source, Data *destination) {
     assert(source->binary == destination->binary);
-    assert(source->size  == destination->size );
+    assert(source->size   == destination->size);
 
     memcpy(destination->content, source->content, source->size);
 }
@@ -39,7 +39,7 @@ void freeData(Data *data) {
     free(data->content);
 
     data->content = nullptr;
-    data->size = 0;
+    data->size    = 0;
 
     free(data);
 }

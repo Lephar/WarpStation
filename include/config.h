@@ -5,4 +5,4 @@
 extern char rootPath[];
 extern char executableName[];
 
-void configure(const int argc, const char *argv[]);
+void configure(int argc, const char *argv[]);
