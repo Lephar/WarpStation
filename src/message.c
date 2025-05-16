@@ -32,19 +32,19 @@ Message createMessage(uuid_t uuid, MessageType type) {
 }
 
 void printMessage(Message message) {
-    debug("\tHeader: %x", message.header);
-    debug("\tLength: %u", message.length);
+    debug("\tHeader:       0x%08X", message.header);
+    debug("\tLength:       %u", message.length);
 
     char uuid[UUID_STR_LEN] = {};
     uuid_unparse_lower(message.sender, uuid);
-    debug("\tSender: %s", uuid);
+    debug("\tSender:       %s", uuid);
 
     debug("\tMessage Type: %s", messageTypeToString(message.type));
-    debug("\tAgent ID: %u",     message.agent);
+    debug("\tAgent ID:     %u",     message.agent);
 
-    debug("\tVector 1: [%g %g %g]", message.vecs[0][0], message.vecs[0][1], message.vecs[0][2]);
-    debug("\tVector 2: [%g %g %g]", message.vecs[1][0], message.vecs[1][1], message.vecs[1][2]);
+    debug("\tVector 1:     [%g, %g, %g]", message.vecs[0][0], message.vecs[0][1], message.vecs[0][2]);
+    debug("\tVector 2:     [%g, %g, %g]", message.vecs[1][0], message.vecs[1][1], message.vecs[1][2]);
 
-    debug("\tPlaceholder: %x", message.placeholder);
-    debug("\tFooter: %x",      message.footer);
+    debug("\tPlaceholder:  0x%08X", message.placeholder);
+    debug("\tFooter:       0x%08X",      message.footer);
 }
