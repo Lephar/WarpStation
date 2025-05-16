@@ -15,7 +15,14 @@ const char *messageTypeToString(MessageType type) {
 }
 
 Message createMessage(uuid_t uuid, MessageType type) {
-    Message message;
+    Message message = {
+        .header      = 0xF0FFFF0F,
+        .length      = 0X00000040,
+        .placeholder = 0x00000000,
+        .footer      = 0xF00FF00F
+    };
+
+    assert(sizeof(message) == message.length);
 
     uuid_copy(message.sender, uuid);
     message.type = type;
