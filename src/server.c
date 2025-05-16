@@ -24,8 +24,10 @@ void commandLoop() {
             destroyConn(server);
             destroyClientList();
             break;
-        } if(   strcmp(command, "p")     == 0 ||
-                strcmp(command, "print") == 0) {
+            } if(   strcmp(command, "l")     == 0 ||
+                    strcmp(command, "list")  == 0 ||
+                    strcmp(command, "p")     == 0 ||
+                    strcmp(command, "print") == 0) {
             printClientList();
         }
     }
