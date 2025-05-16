@@ -2,6 +2,8 @@
 
 #include "connection.h"
 
+#include "message.h"
+
 #include "logger.h"
 
 pthread_rwlock_t listLock;
@@ -89,6 +91,10 @@ void removeClient(Conn *conn) {
 
 void *clientLoop(void *param) {
     Conn *conn = param;
+
+    Message message = createMessage(conn->uuid, AGENT_ADD);
+    debug("Initial client message:");
+    printMessage(message);
 
     sleep(5 + rand() % 10);
 

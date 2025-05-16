@@ -16,35 +16,28 @@ const char *messageTypeToString(MessageType type) {
 
 Message createMessage(uuid_t uuid, MessageType type) {
     Message message = {
-        .header      = 0xF0FFFF0F,
-        .length      = 0X00000040,
-        .placeholder = 0x00000000,
-        .footer      = 0xF00FF00F
+        .header     = 0x05030106,
+        .length     = sizeof(message),
+        .dataLength = sizeof(message.data),
     };
-
-    assert(sizeof(message) == message.length);
 
     uuid_copy(message.sender, uuid);
     message.type = type;
-    message.agent = UINT32_MAX;
 
     return message;
 }
 
 void printMessage(Message message) {
     debug("\tHeader:       0x%08X", message.header);
-    debug("\tLength:       %u", message.length);
+    debug("\tLength:       %u",     message.length);
 
     char uuid[UUID_STR_LEN] = {};
-    uuid_unparse_lower(message.sender, uuid);
-    debug("\tSender:       %s", uuid);
+    uuid_unparse_lower(message.sender,  uuid);
+    debug("\tSender:       %s",     uuid);
+    debug("\tMessage Type: %s",     messageTypeToString(message.type));
 
-    debug("\tMessage Type: %s", messageTypeToString(message.type));
-    debug("\tAgent ID:     %u",     message.agent);
-
-    debug("\tVector 1:     [%g, %g, %g]", message.vecs[0][0], message.vecs[0][1], message.vecs[0][2]);
-    debug("\tVector 2:     [%g, %g, %g]", message.vecs[1][0], message.vecs[1][1], message.vecs[1][2]);
-
-    debug("\tPlaceholder:  0x%08X", message.placeholder);
-    debug("\tFooter:       0x%08X",      message.footer);
+    debug("\tData Length:  %d",     message.dataLength);
+    for(int i = 0; i < message.dataLength / sizeof(uint32_t); i++) {
+        debug("\t\t0x%08X", message.data[i]);
+    }
 }
