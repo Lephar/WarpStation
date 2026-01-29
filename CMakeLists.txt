@@ -9,6 +9,12 @@ file(GLOB_RECURSE SOURCES src/*.c)
 
 set(COMPILE_OPTIONS -Wall -Wextra)
 
+if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+    list(APPEND COMPILE_OPTIONS -g -Og)
+elseif(${CMAKE_BUILD_TYPE} STREQUAL "Release")
+    list(APPEND COMPILE_OPTIONS -O3 -ffast-math -march=native -mtune=native)
+endif()
+
 add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES})
 target_compile_options(${PROJECT_NAME} PUBLIC ${COMPILE_OPTIONS})
 target_include_directories(${PROJECT_NAME} PUBLIC include)
