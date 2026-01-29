@@ -1,8 +1,8 @@
-#include "config.h"
 #include "server.h"
 
 int main(const int argc, const char *argv[]) {
-    configure(argc, argv);
+    (void) argc;
+    (void) argv;
 
     dispatchServer();
     commandLoop();

@@ -5,8 +5,8 @@
 
 #include "logger.h"
 
-char ip[INET_ADDRSTRLEN];
-uint16_t port;
+char ip[INET_ADDRSTRLEN] = "127.0.0.1";
+uint16_t port = 1238;
 
 Conn* server;
 
